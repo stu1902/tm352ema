@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta name="format-detection" content="telephone=no">
+	<meta name="msapplication-tap-highlight" content="no">
+	<meta name="viewport"
+		content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width">
+	<meta http-equiv="Content-Security-Policy" content="">
+	<meta name="description" content="A MegaMax widget app for TM352 EMA">
+	<meta name="author" content="Stu Thomas Y8531278">
+
+	<script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-core.js" charset="utf-8"></script>
+	<script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-service.js" charset="utf-8"></script>
+	<script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-mapevents.js" charset="utf-8"></script>
+	<script type="text/javascript" src="https://js.api.here.com/v3/3.1/mapsjs-ui.js" charset="utf-8"></script>
+	<script src="js/jquery-2.2.4.min.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="css/mapsjs-ui.css" />
+	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
+	<!--Link to CSS-->
+	<link rel="stylesheet" href="css/index.css" />
+	<link rel="stylesheet" href="css/w3.css" />
+
+
+
+
+	<title>MegaMax Sale</title>
+</head>
+
+<body>
+	<div class="app">
+		<h1>MegaMax Sale</h1>
+		<div id="ident">
+			<!-- TODO I. User Information -->
+			<label for="oucu">Salesperson:<label>
+				<input type="text" id="oucu" name="oucu" size="10" required>
+				<label for="client_id">Client ID:</label>
+				<input type="text" id="client_id" name="client_id" size="10">
+		</div>
+		<div id="navigate">
+			<!-- TODO II. Widget navigation buttons -->
+			<button type="button" onclick="controller.p_widget()">Prev Widget</button>
+			<button type="button" onclick="controller.n_widget()">Next Widget</button>
+			<label for="quantity">Number:</label>
+			<input type="text" id="quantity" name="quantity" size="10">
+		</div>
+		<div class="flexContainer">
+		<div id="display">
+			<!-- TODO III. Widget display-->
+			<img id="image" src="img/logo.png" alt="widget" />
+		</div>
+		<div id="details">
+
+		</div>
+		</div>
+		<div id="order">
+			<!-- TODO IV. Order navigation buttons and display -->
+			<button type="button">Prev Order</button>
+			<button type="button">Next Order</button>
+			<button type="button" onclick="controller.addToOrder()">Add to Order</button><br>
+			<button type="button" onclick="controller.setNewOrder()">Start New Order</button>
+		</div>
+		<!-- TODO V. Map canvas -->
+		<div id="mapContainer" style="border:black solid 1px; height: 40vh; margin: auto;">
+		</div>
+	</div>
+
+	<script type="text/javascript" src="js/index.js"></script>
+	<script type="text/javascript" src="js/helpers.js"></script>
+	<script type="text/javascript" src="cordova.js"></script>
+
+
+</body>
+
+</html>

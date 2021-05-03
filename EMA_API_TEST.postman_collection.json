@@ -1,0 +1,247 @@
+{
+	"info": {
+		"_postman_id": "ebefedae-8ee8-40c7-afce-e85b8ba1b49e",
+		"name": "TM352 EMA 20J",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Test the CLIENTS API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://137.108.92.9/openstack/api/clients/?OUCU=st5527&password=E3J501IH",
+					"protocol": "http",
+					"host": [
+						"137",
+						"108",
+						"92",
+						"9"
+					],
+					"path": [
+						"openstack",
+						"api",
+						"clients"
+					],
+					"query": [
+						{
+							"key": "OUCU",
+							"value": "st5527"
+						},
+						{
+							"key": "password",
+							"value": "E3J501IH"
+						}
+					]
+				},
+				"description": "With a valid client id value appended to the end of the URL itself, before any additional parameters. If an id is provided then the API will return the single client record that has that id value. "
+			},
+			"response": []
+		},
+		{
+			"name": "Test the Widgets API",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://137.108.92.9/openstack/api/widgets/?OUCU=st5527&password=E3J501IH",
+					"protocol": "http",
+					"host": [
+						"137",
+						"108",
+						"92",
+						"9"
+					],
+					"path": [
+						"openstack",
+						"api",
+						"widgets"						
+					],
+					"query": [
+						{
+							"key": "OUCU",
+							"value": "st5527"
+						},
+						{
+							"key": "password",
+							"value": "E3J501IH"
+						}
+					]
+				},
+				"description": "The widgets table is also read-only so again the only applicable operations are a GET, either with a widget id to retrieve a specific widget record, or with no id to retrieve all widget records. "
+			},
+			"response": []
+		},
+		{
+			"name": "Post a new record",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "OUCU",
+							"value": "st5527",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "E3J501IH",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "latitude",
+							"value": "89",
+							"type": "text"
+						},
+						{
+							"key": "longitude",
+							"value": "-20",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://137.108.92.9/openstack/api/orders",
+					"protocol": "http",
+					"host": [
+						"137",
+						"108",
+						"92",
+						"9"
+					],
+					"path": [
+						"openstack",
+						"api",
+						"orders"
+					]
+				},
+				"description": "POST will create a new record. The record should have appropriate values for the database fields (client_id, latitude and longitude) but no ID should be passed to the API because the database will generate a new unique ID value for the record. "
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a specific order",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "OUCU",
+							"value": "st5527"
+						},
+						{
+							"key": "password",
+							"value": "E3J501IH"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://137.108.92.9/openstack/api/orders/53",
+					"protocol": "http",
+					"host": [
+						"137",
+						"108",
+						"92",
+						"9"
+					],
+					"path": [
+						"openstack",
+						"api",
+						"orders",
+						"53"
+					]
+				},
+				"description": "A DELETE will remove a single record from the database. The unique ID of the record must be provided. "
+			},
+			"response": []
+		},
+		{
+			"name": "Get Order",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://137.108.92.9/openstack/api/orders/?OUCU=st5527&password=E3J501IH",
+					"protocol": "http",
+					"host": [
+						"137",
+						"108",
+						"92",
+						"9"
+					],
+					"path": [
+						"openstack",
+						"api",
+						"orders"
+					],
+					"query": [
+						{
+							"key": "OUCU",
+							"value": "st5527"
+						},
+						{	"key": "password",
+							"value": "E3J501IH"
+						}
+					]
+				},
+				"description": "GET with no ID will retrieve all the orders. GET with an ID value will retrieve just the single record matching the ID. "
+			},
+			"response": []
+		},
+		{
+			"name": "PUT new details",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "OUCU",
+							"value": "st5527",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "E3J501IH",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "2",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://137.108.92.9/openstack/taxi/orders/53",
+					"protocol": "http",
+					"host": [
+						"137",
+						"108",
+						"92",
+						"9"
+					],
+					"path": [
+						"openstack",
+						"taxi",
+						"orders",
+						"53"
+					]
+				},
+				"description": "PUT will update an existing record with new values. The request must include a valid order ID value to uniquely identify the existing record that is to be updated."
+			},
+			"response": []
+		}
+	]
+}
