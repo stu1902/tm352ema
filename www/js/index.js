@@ -28,6 +28,7 @@ var price;
 var totalCost = 0;
 var latitude;
 var longitude;
+var coords;
 
 // Wait for the deviceready event before using any of Cordova's device APIs.
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
@@ -97,41 +98,29 @@ function MegaMaxApp() {
                 console.log("New order created: ", obj);
             }
         }
+        
+        var onSuccess = function (data) {
+            longitude = data[0].lon;
+            latitude = data[0].lat;
+            sleep(3000)
+            $.ajax(url, { type: "POST", data: { OUCU: oucu, password: PASSWORD, client_id: client_id, latitude: latitude, longitude: longitude }, success: setSuccess });
+        }
 
-        /* function getSuccess(data){
-            var obj = JSON.parse(data);
-            console.log("result: ",obj);
-        } */
-        totalCost=0;
-        var location = new getCoords();
-        console.log(latitude, longitude);
+        totalCost = 0;
+        var address = clients.data[client_id - 1].address;
+        nominatim.get(address, onSuccess);
         var url = BASE_URL + "orders";
-        // Set coordinates to 0 if using a web browser
-        //if (cordova.platformId === "browser") {
-        //    latitude = 0;
-        //    longitude = 0;
-        //}
-        $.ajax(url, { type: "POST", data: { OUCU: oucu, password: PASSWORD, client_id: client_id, latitude: latitude, longitude: longitude }, success: setSuccess });
+       }
+
+    // Set a delay timer.
+    function sleep(milliseconds) {
+        const date = Date.now();
+        let currentDate = null;
+        do {
+            currentDate = Date.now();
+        } while (currentDate - date < milliseconds);
     }
 
-    // Function returns geodata from an address query 
-    class getCoords {
-        constructor() {
-            var id = getInputValue("client_id", "");
-            var index = id - 1;
-            var address = clients.data[index].address;
-            service.geocode({
-                q: address, limit: 1
-            }, (result) => {
-                // Add a marker for each location found
-                console.log(result.items);
-                var lat = result.items[0].position.lat;
-                var long = result.items[0].position.lng;
-                console.log(lat, long);
-                map.addObject(new H.map.Marker(result.items[0].position));
-            }, alert);
-        };       
-    }
 
 
 
@@ -200,7 +189,7 @@ function MegaMaxApp() {
             var obj = JSON.parse(data)
             if (obj.status === "success") {
                 console.log("Result", obj);
-                totalCost+=cost;
+                totalCost += cost;
                 console.log(totalCost);
             }
         }
