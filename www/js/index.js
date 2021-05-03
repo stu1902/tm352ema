@@ -103,33 +103,37 @@ function MegaMaxApp() {
             console.log("result: ",obj);
         } */
         totalCost=0;
-        getCoords(client_id);
+        var location = new getCoords();
+        console.log(latitude, longitude);
         var url = BASE_URL + "orders";
         // Set coordinates to 0 if using a web browser
         //if (cordova.platformId === "browser") {
         //    latitude = 0;
         //    longitude = 0;
         //}
-        //$.ajax(url, { type: "GET", data: { OUCU: oucu, password: PASSWORD, id: client_id }, success: getSuccess});
         $.ajax(url, { type: "POST", data: { OUCU: oucu, password: PASSWORD, client_id: client_id, latitude: latitude, longitude: longitude }, success: setSuccess });
     }
 
     // Function returns geodata from an address query 
-    function getCoords(cusId) {
-        var index = cusId - 1;
-        var address = clients.data[index].address;
-        service.geocode({
-            q: address, limit: 1
-        }, (result) => {
-                var items = JSON.parse(data);
-            // Add a marker for each location found
-                console.log(items);
-                latitude = items[0].position.lat;
-                longitude = items[0].position.lng;
-                console.log(longitude, latitude);
-                map.addObject(new H.map.Marker(items.position));
-        }, alert);
+    class getCoords {
+        constructor() {
+            var id = getInputValue("client_id", "");
+            var index = id - 1;
+            var address = clients.data[index].address;
+            service.geocode({
+                q: address, limit: 1
+            }, (result) => {
+                // Add a marker for each location found
+                console.log(result.items);
+                var lat = result.items[0].position.lat;
+                var long = result.items[0].position.lng;
+                console.log(lat, long);
+                map.addObject(new H.map.Marker(result.items[0].position));
+            }, alert);
+        };       
     }
+
+
 
     //Function retrieves client details
     function getClientData() {
@@ -221,12 +225,6 @@ function MegaMaxApp() {
     this.validate = function () {
         var oucu = getInputValue("oucu", "user1");
         console.log(oucu);
-    }
-
-    //Call to fetch coordinates
-    this.getCoords = function () {
-        var cusId = getInputValue("client_id", "")
-        getCoords(cusId);
     }
 
     //Call to fetch widget data
