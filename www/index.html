@@ -19,8 +19,9 @@
 	<link rel="stylesheet" type="text/css" href="css/mapsjs-ui.css" />
 	<link rel="stylesheet" href="css/jquery.mobile-1.4.5.min.css" />
 	<!--Link to CSS-->
-	<link rel="stylesheet" href="css/index.css" />
 	<link rel="stylesheet" href="css/w3.css" />
+	<link rel="stylesheet" href="css/index.css" />
+
 
 
 
@@ -30,45 +31,53 @@
 
 <body>
 	<div class="app">
-		<h1>MegaMax Sale</h1>
-		<div id="ident">
-			<!-- TODO I. User Information -->
-			<label for="oucu">Salesperson:<label>
+		<div class="w3-container w3-teal w3-border">
+			<h1>MegaMax Sale</h1>
+		</div>
+		<div class="flexContainer">
+			<div id="ident">
+				<!-- TODO I. User Information -->
+				<label for="oucu">Salesperson:</label>
 				<input type="text" id="oucu" name="oucu" size="10" required>
 				<label for="client_id">Client ID:</label>
 				<input type="text" id="client_id" name="client_id" size="10">
+			</div>
 		</div>
 		<div id="navigate">
 			<!-- TODO II. Widget navigation buttons -->
-			<button type="button" onclick="controller.p_widget()">Prev Widget</button>
-			<button type="button" onclick="controller.n_widget()">Next Widget</button>
+			<button class="w3-btn w3-rounded w3-teal w3-small" type="button" onclick="controller.p_widget()">Prev
+				Widget</button>
+			<button class="w3-btn w3-rounded w3-teal w3-small" type="button" onclick="controller.n_widget()">Next
+				Widget</button>
 			<label for="quantity">Number:</label>
 			<input type="text" id="quantity" name="quantity" size="10">
 		</div>
 		<div class="flexContainer">
-		<div id="display">
-			<!-- TODO III. Widget display-->
-			<img id="image" src="img/logo.png" alt="widget" />
-		</div>
-		<div id="details">
+			<div id="display">
+				<!-- TODO III. Widget display-->
+				<img id="image" src="img/logo.png" alt="widget" />
+			</div>
+			<div class="w3-pale-green" id="details">
 
-		</div>
+			</div>
 		</div>
 		<div id="order">
 			<!-- TODO IV. Order navigation buttons and display -->
-			<button type="button">Prev Order</button>
-			<button type="button">Next Order</button>
-			<button type="button" onclick="controller.addToOrder()">Add to Order</button><br>
-			<button type="button" onclick="controller.setNewOrder()">Start New Order</button>
+			<button class="w3-btn w3-rounded w3-teal w3-small" type="button">View Order</button>
+			<button class="w3-btn w3-rounded w3-teal w3-small" type="button">Next Order</button>
+			<button class="w3-btn w3-rounded w3-teal w3-small" type="button" onclick="controller.addToOrder()">Add to
+				Order</button><br>
+			<button class="w3-btn w3-rounded w3-teal w3-small" type="button" onclick="controller.setNewOrder()">Start
+				New Order</button>
 		</div>
 		<!-- TODO V. Map canvas -->
-		<div id="mapContainer" style="border:black solid 1px; height: 40vh; margin: auto;">
+		<div id="mapContainer" style="border:rgb(40, 189, 156) solid 1px; height: 40vh; margin: auto;">
 		</div>
 	</div>
 
 	<script type="text/javascript" src="js/index.js"></script>
 	<script type="text/javascript" src="js/helpers.js"></script>
-	<script type="text/javascript" src="cordova.js"></script>
+	<!--<script type="text/javascript" src="cordova.js"></script>-->
 
 
 </body>

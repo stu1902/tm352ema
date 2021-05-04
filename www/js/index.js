@@ -26,6 +26,7 @@ var clients;
 var order_id;
 var price;
 var totalCost = 0;
+var costInPounds = 0;
 var latitude;
 var longitude;
 var coords;
@@ -107,6 +108,7 @@ function MegaMaxApp() {
         }
 
         totalCost = 0;
+        costInPounds = 0;
         var address = clients.data[client_id - 1].address;
         nominatim.get(address, onSuccess);
         var url = BASE_URL + "orders";
@@ -190,7 +192,9 @@ function MegaMaxApp() {
             if (obj.status === "success") {
                 console.log("Result", obj);
                 totalCost += cost;
+                costInPounds = totalCost / 100;
                 console.log(totalCost);
+                console.log("£", costInPounds);
             }
         }
         var cost = quantity * price_pence;
