@@ -26,6 +26,7 @@ var clients;
 var order_id;
 var price;
 var totalCost = 0;
+var vatCost = 0;
 var costInPounds = 0;
 var latitude;
 var longitude;
@@ -193,14 +194,22 @@ function MegaMaxApp() {
                 console.log("Result", obj);
                 totalCost += cost;
                 costInPounds = totalCost / 100;
+                vatCost = costInPounds * 1.2.toFixed(2);
                 console.log(totalCost);
                 console.log("£", costInPounds);
+                console.log("+ VAT: £", vatCost);
             }
         }
         var cost = quantity * price_pence;
         var addUrl = BASE_URL + "order_items";
         $.ajax(addUrl, { type: "POST", data: { OUCU: oucu, password: PASSWORD, order_id: order_id, widget_id: widget, number: quantity, pence_price: price_pence }, success: addSuccess });
     }
+
+    $(document).ready(function(){
+        $("#view").click(function(){
+          $("#panel").slideToggle("slow");
+        });
+    });
 
 
     /* PUBLIC FUNCTIONS
@@ -220,10 +229,10 @@ function MegaMaxApp() {
         console.log(oucu);
     }
 
-    //Call to fetch widget data
+/*     //Call to fetch widget data
     this.getWidgetData = function () {
         getWidgetData();
-    }
+    } */
 
     this.n_widget = function () {
         nextWidget();
