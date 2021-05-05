@@ -90,7 +90,7 @@ h1 {
     background-color: white;
     color: darkslateblue;
     text-align: center;
-    font: 18px bold Helvetica, sans-serif;
+    font: 16px bold Helvetica, sans-serif;
 }
 #panel {
     padding: 5px;
@@ -99,7 +99,7 @@ h1 {
     border: solid 1px #c3c3c3;
   }
 #panel {
-    padding: 50px;
+    padding: 10px;
     display: none;
   }
 

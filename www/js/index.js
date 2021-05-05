@@ -211,6 +211,30 @@ function MegaMaxApp() {
         });
     });
 
+    function toggleButton() {
+        var x = document.getElementById("startOrder");
+        if (x.innerHTML === "Start New Order") {
+          x.innerHTML = "Complete Order";
+          //var y = document.getElementById("startOrder")
+          x.style = "background-color: red; color: white";
+        } else {
+          x.innerHTML = "Start New Order";
+          x.style="background-color: #009688; color: white";
+        }
+      }
+
+      function getOrderItems(order_id){
+            function itemsSuccess(data){
+                var items = JSON.parse(data);
+                console.log("items: ", items);
+                document.getElementById("panel").append(items);
+            }
+
+          var id = order_id;
+          var itemsUrl = BASE_URL+ "order_items?OUCU=st5527&password=" + PASSWORD + "&order_id=" + id;
+          $.ajax(itemsUrl, { type: "GET", data: {}, success: itemsSuccess });
+      }
+
 
     /* PUBLIC FUNCTIONS
     /* accessable from the view object
@@ -251,4 +275,12 @@ function MegaMaxApp() {
         addToOrder(oucu, orderNum, widget, quantity, price_pence);
     }
 
+    this.toggleButton = function () {
+        toggleButton();
+    }
+
+    this.getOrderItems = function () {
+        var id = "127714";
+        getOrderItems(id);
+    }
 }

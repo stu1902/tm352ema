@@ -63,17 +63,18 @@
 		</div>
 		<div id="order">
 			<!-- TODO IV. Order navigation buttons and display -->
-			<div id = "view">
-			<button class="w3-btn w3-rounded w3-teal w3-small" type="button">View Order</button>
+			<div id="view">
+				<button class="w3-btn w3-rounded w3-teal w3-small" type="button">View Order</button>
 			</div>
-			<button class="w3-btn w3-rounded w3-teal w3-small" type="button">Next Order</button>
+			<button class="w3-btn w3-rounded w3-teal w3-small" type="button" onclick="controller.getOrderItems()">Test</button>
 			<button class="w3-btn w3-rounded w3-teal w3-small" type="button" onclick="controller.addToOrder()">Add to
 				Order</button><br>
-			<button class="w3-btn w3-rounded w3-teal w3-small" type="button" onclick="controller.setNewOrder()">Start
+			<button id="startOrder" class="w3-btn w3-block w3-rounded w3-border" style="background-color: #009688; color: white;"
+				type="button" onclick="controller.toggleButton(); controller.setNewOrder()">Start
 				New Order</button>
 		</div>
 
-		<div id="panel">Order Here</div>
+		<div id="panel"></div>
 
 		<!-- TODO V. Map canvas -->
 		<div id="mapContainer" style="border:rgb(40, 189, 156) solid 1px; height: 40vh; margin: auto;">

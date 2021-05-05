@@ -309,4 +309,5 @@ function NominatimService() {
     };
 }
 
+
 var nominatim = new NominatimService();
