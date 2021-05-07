@@ -18,19 +18,11 @@
  */
 "use strict";
 
-var controller;
+var controller, order, widgets, clients, order_id, price, latitude, longitude, coords;
 var widget_id = 0;
-var order;
-var widgets;
-var clients;
-var order_id;
-var price;
 var totalCost = 0;
 var vatCost = 0;
 var costInPounds = 0;
-var latitude;
-var longitude;
-var coords;
 
 // Wait for the deviceready event before using any of Cordova's device APIs.
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
@@ -74,8 +66,6 @@ function MegaMaxApp() {
             center: { lat: 52.407886, lng: -4.057142 }
         }
     );
-    // Initialize a geocode object for HERE maps
-    var service = platform.getSearchService();
 
     // Create the default UI:
     var ui = H.ui.UI.createDefault(map, defaultLayers);
@@ -98,14 +88,22 @@ function MegaMaxApp() {
                 alert("Your order #" + obj.data[0].id + " has been successfully created.");
                 order_id = obj.data[0].id;
                 console.log("New order created: ", obj);
+                toggleButton();
             }
         }
-        
+
         var onSuccess = function (data) {
             longitude = data[0].lon;
             latitude = data[0].lat;
             sleep(3000)
             $.ajax(url, { type: "POST", data: { OUCU: oucu, password: PASSWORD, client_id: client_id, latitude: latitude, longitude: longitude }, success: setSuccess });
+            var point = {
+                lng: longitude,
+                lat: latitude
+            };
+            map.setCenter(point);
+            var marker = new H.map.Marker(point);
+            map.addObject(marker);
         }
 
         totalCost = 0;
@@ -113,7 +111,7 @@ function MegaMaxApp() {
         var address = clients.data[client_id - 1].address;
         nominatim.get(address, onSuccess);
         var url = BASE_URL + "orders";
-       }
+    }
 
     // Set a delay timer.
     function sleep(milliseconds) {
@@ -194,10 +192,11 @@ function MegaMaxApp() {
                 console.log("Result", obj);
                 totalCost += cost;
                 costInPounds = totalCost / 100;
-                vatCost = costInPounds * 1.2.toFixed(2);
+                vatCost = (costInPounds * 1.2).toFixed(2);
                 console.log(totalCost);
                 console.log("£", costInPounds);
                 console.log("+ VAT: £", vatCost);
+                getOrderItems(order_id);
             }
         }
         var cost = quantity * price_pence;
@@ -205,35 +204,48 @@ function MegaMaxApp() {
         $.ajax(addUrl, { type: "POST", data: { OUCU: oucu, password: PASSWORD, order_id: order_id, widget_id: widget, number: quantity, pence_price: price_pence }, success: addSuccess });
     }
 
-    $(document).ready(function(){
-        $("#view").click(function(){
-          $("#panel").slideToggle("slow");
+    $(document).ready(function () {
+        $("#view").click(function () {
+            $("#panel").slideToggle("slow");
         });
     });
 
     function toggleButton() {
         var x = document.getElementById("startOrder");
-        if (x.innerHTML === "Start New Order") {
-          x.innerHTML = "Complete Order";
-          //var y = document.getElementById("startOrder")
-          x.style = "background-color: red; color: white";
-        } else {
-          x.innerHTML = "Start New Order";
-          x.style="background-color: #009688; color: white";
+        if (x.innerHTML == "Start New Order") {
+            x.innerHTML = "Complete Order";
+            //var y = document.getElementById("startOrder")
+            x.style = "background-color: red; color: white";
+        } else if(x.innerHTML == "Complete Order") {
+            alert("This completes your order.\nThank you for shopping with\nMegaMax.")
+            order_id = 0;
+            x.innerHTML = "Start New Order";
+            x.style = "background-color: #009688; color: white";
         }
-      }
+    }
 
-      function getOrderItems(order_id){
-            function itemsSuccess(data){
-                var items = JSON.parse(data);
-                console.log("items: ", items);
-                document.getElementById("panel").append(items);
-            }
+    function getOrderItems(order_id) {
+        function itemsSuccess(data) {
+            var items = JSON.parse(data);
+            console.log("items: ", items);
+            itemTable(items);
+        }
+        var id = order_id;
+        var itemsUrl = BASE_URL + "order_items?OUCU=st5527&password=" + PASSWORD + "&order_id=" + id;
+        $.ajax(itemsUrl, { type: "GET", data: {}, success: itemsSuccess });
+    }
 
-          var id = order_id;
-          var itemsUrl = BASE_URL+ "order_items?OUCU=st5527&password=" + PASSWORD + "&order_id=" + id;
-          $.ajax(itemsUrl, { type: "GET", data: {}, success: itemsSuccess });
-      }
+
+    function itemTable(items) {
+        var obj = items.data;
+        var text = "";
+        text += "<table border='1'>"
+        for (var x in obj) {
+            text += "<tr><td>" + obj[x].id + "</td><td>" + obj[x].widget_id + "</td><td>" + obj[x].number + "</td><td>" + obj[x].pence_price + "</td></tr>";
+        }
+        text += "</table>"
+        document.getElementById("panel").innerHTML = text;
+    }
 
 
     /* PUBLIC FUNCTIONS
@@ -253,10 +265,6 @@ function MegaMaxApp() {
         console.log(oucu);
     }
 
-/*     //Call to fetch widget data
-    this.getWidgetData = function () {
-        getWidgetData();
-    } */
 
     this.n_widget = function () {
         nextWidget();
