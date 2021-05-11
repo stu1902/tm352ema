@@ -18,8 +18,10 @@
  */
 "use strict";
 
-var controller, order, widgets, clients, order_id, price, latitude, longitude, coords;
+var controller, order, widgets, clients, order_id, price;
+var c_name, c_add, latitude, longitude, coords, oucu;
 var widget_id = 0;
+var subCost = 0;
 var totalCost = 0;
 var vatCost = 0;
 var costInPounds = 0;
@@ -49,6 +51,13 @@ function MegaMaxApp() {
 
     // Retrieve client data ready for processing
     getClientData();
+
+    // Set up a slidedown panel for order displays
+    $(document).ready(function () {
+        $("#view").click(function () {
+            $("#panel").slideToggle("slow");
+        });
+    });
 
     // Initialize the map platform object:
     var platform = new H.service.Platform({
@@ -87,8 +96,9 @@ function MegaMaxApp() {
             if (obj.status === "success") {
                 alert("Your order #" + obj.data[0].id + " has been successfully created.");
                 order_id = obj.data[0].id;
-                console.log("New order created: ", obj);
-                toggleButton();
+                c_name = clients.data[client_id - 1].name;
+                c_add = clients.data[client_id - 1].address;
+                console.log(c_name + "New order created: ", obj);
             }
         }
 
@@ -105,7 +115,6 @@ function MegaMaxApp() {
             var marker = new H.map.Marker(point);
             map.addObject(marker);
         }
-
         totalCost = 0;
         costInPounds = 0;
         var address = clients.data[client_id - 1].address;
@@ -190,38 +199,38 @@ function MegaMaxApp() {
             var obj = JSON.parse(data)
             if (obj.status === "success") {
                 console.log("Result", obj);
-                totalCost += cost;
-                costInPounds = totalCost / 100;
-                vatCost = (costInPounds * 1.2).toFixed(2);
-                console.log(totalCost);
+                subCost += cost;
+                costInPounds = subCost / 100;
+                vatCost = subCost * 0.2;
+                totalCost = costInPounds + vatCost;
+                console.log("item cost: ", cost);
+                console.log("total cost: ", subCost);
                 console.log("£", costInPounds);
                 console.log("+ VAT: £", vatCost);
                 getOrderItems(order_id);
             }
         }
-        var cost = quantity * price_pence;
+        var agreedPrice = getInputValue("price", "");
+        var cost = quantity * agreedPrice;
         var addUrl = BASE_URL + "order_items";
         $.ajax(addUrl, { type: "POST", data: { OUCU: oucu, password: PASSWORD, order_id: order_id, widget_id: widget, number: quantity, pence_price: price_pence }, success: addSuccess });
     }
 
-    $(document).ready(function () {
-        $("#view").click(function () {
-            $("#panel").slideToggle("slow");
-        });
-    });
 
-    function toggleButton() {
-        var x = document.getElementById("startOrder");
-        if (x.innerHTML == "Start New Order") {
-            x.innerHTML = "Complete Order";
-            //var y = document.getElementById("startOrder")
-            x.style = "background-color: red; color: white";
-        } else if(x.innerHTML == "Complete Order") {
-            alert("This completes your order.\nThank you for shopping with\nMegaMax.")
-            order_id = 0;
-            x.innerHTML = "Start New Order";
-            x.style = "background-color: #009688; color: white";
+
+    function Toggle() {
+
+        var btn = document.getElementById("startOrder");
+
+        if (btn.innerHTML == "Start New Order") {
+            btn.style.backgroundColor = "red";
+            btn.innerHTML = "Complete Order";
         }
+        else {
+            btn.style.backgroundColor = "#009688";
+            btn.innerHTML = "Start New Order";
+        }
+
     }
 
     function getOrderItems(order_id) {
@@ -239,13 +248,21 @@ function MegaMaxApp() {
     function itemTable(items) {
         var obj = items.data;
         var text = "";
-        text += "<table border='1'>"
+        text += "<h3>" + c_name + "</h3>";
+        text += "<p>" + c_add + "</p>";
+        text += "<table border='1'>";
+        text += "<tr><th>Widget No.</th><th>Quantity</th><th>Price Each</th><th>Cost</th></tr>"
         for (var x in obj) {
-            text += "<tr><td>" + obj[x].id + "</td><td>" + obj[x].widget_id + "</td><td>" + obj[x].number + "</td><td>" + obj[x].pence_price + "</td></tr>";
+            text += "<tr><td>" + obj[x].widget_id + "</td><td>" + obj[x].number + "</td><td>" + obj[x].pence_price + "</td><td>" + (obj[x].number * obj[x].pence_price)/100; +"</td></tr>";
         }
-        text += "</table>"
+        text += "</table>";
+        text += "<p>Subtotal: £" + costInPounds +"</p><p>VAT: £" + vatCost +"</p><p>Total: £" + totalCost +"</p>";
+        text += "<p>Latitude: " + latitude + "  Longitude: " + longitude +"</p>";
+
         document.getElementById("panel").innerHTML = text;
     }
+
+
 
 
     /* PUBLIC FUNCTIONS
@@ -275,20 +292,17 @@ function MegaMaxApp() {
     }
 
     this.addToOrder = function () {
-        var oucu = getInputValue("oucu", "");
+        oucu = getInputValue("oucu", "");
         var orderNum = order_id;
-        var widget = widget_id;
+        var widget = widgets.data[widget_id].id;
         var quantity = getInputValue("quantity", "");
-        var price_pence = price;
+        var price_pence = getInputValue("price", widgets.data[widget_id].pence_price);
         addToOrder(oucu, orderNum, widget, quantity, price_pence);
-    }
-
-    this.toggleButton = function () {
-        toggleButton();
     }
 
     this.getOrderItems = function () {
         var id = "127714";
         getOrderItems(id);
     }
+
 }
