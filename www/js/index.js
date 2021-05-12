@@ -52,6 +52,7 @@ function MegaMaxApp() {
     // Retrieve client data ready for processing
     getClientData();
 
+
     // Set up a slidedown panel for order displays
     $(document).ready(function () {
         $("#view").click(function () {
@@ -99,6 +100,8 @@ function MegaMaxApp() {
                 c_name = clients.data[client_id - 1].name;
                 c_add = clients.data[client_id - 1].address;
                 console.log(c_name + "New order created: ", obj);
+                $("#startOrder").hide()
+
             }
         }
 
@@ -198,15 +201,10 @@ function MegaMaxApp() {
         function addSuccess(data) {
             var obj = JSON.parse(data)
             if (obj.status === "success") {
-                console.log("Result", obj);
                 subCost += cost;
-                costInPounds = subCost / 100;
-                vatCost = subCost * 0.2;
+                costInPounds = parseFloat((subCost / 100).toFixed(2));
+                vatCost = parseFloat((costInPounds * 0.2).toFixed(2));
                 totalCost = costInPounds + vatCost;
-                console.log("item cost: ", cost);
-                console.log("total cost: ", subCost);
-                console.log("£", costInPounds);
-                console.log("+ VAT: £", vatCost);
                 getOrderItems(order_id);
             }
         }
@@ -216,22 +214,6 @@ function MegaMaxApp() {
         $.ajax(addUrl, { type: "POST", data: { OUCU: oucu, password: PASSWORD, order_id: order_id, widget_id: widget, number: quantity, pence_price: price_pence }, success: addSuccess });
     }
 
-
-
-    function Toggle() {
-
-        var btn = document.getElementById("startOrder");
-
-        if (btn.innerHTML == "Start New Order") {
-            btn.style.backgroundColor = "red";
-            btn.innerHTML = "Complete Order";
-        }
-        else {
-            btn.style.backgroundColor = "#009688";
-            btn.innerHTML = "Start New Order";
-        }
-
-    }
 
     function getOrderItems(order_id) {
         function itemsSuccess(data) {
@@ -258,6 +240,7 @@ function MegaMaxApp() {
         text += "</table>";
         text += "<p>Subtotal: £" + costInPounds +"</p><p>VAT: £" + vatCost +"</p><p>Total: £" + totalCost +"</p>";
         text += "<p>Latitude: " + latitude + "  Longitude: " + longitude +"</p>";
+        text += "<button type='button'>Complete Order</button>";
 
         document.getElementById("panel").innerHTML = text;
     }

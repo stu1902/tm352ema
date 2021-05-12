@@ -66,15 +66,14 @@
 		</div>
 		<div id="order">
 			<!-- TODO IV. Order navigation buttons and display -->
-			<div id="view">
-				<button class="w3-btn w3-rounded w3-teal w3-small" type="button">View Order</button>
-			</div>
-			<button class="w3-btn w3-rounded w3-teal w3-small" type="button">Test</button>
-			<button class="w3-btn w3-rounded w3-teal w3-small" type="button" onclick="controller.addToOrder()">Add to
-				Order</button><br>
-			<button id="startOrder" class="w3-btn w3-block w3-rounded w3-border" style="background-color: #009688; color: white;"
-				type="button" onclick="controller.setNewOrder();">Start
+			<button id="startOrder" class="w3-btn w3-block w3-teal w3-rounded w3-border" type="button"
+				onclick="controller.setNewOrder();">Start
 				New Order</button>
+			<button class="w3-btn w3-rounded w3-block w3-amber w3-small" type="button"
+				onclick="controller.addToOrder()">Add to
+				Order</button>
+			<button id="view" class="w3-btn w3-rounded w3-block w3-deep-purple w3-small" type="button">View and Complete
+				Order</button>
 		</div>
 
 		<div id="panel"></div>
