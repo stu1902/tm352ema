@@ -25,6 +25,8 @@ var subCost = 0;
 var totalCost = 0;
 var vatCost = 0;
 var costInPounds = 0;
+//Set today's date as a constant.
+const today = new Date();
 
 // Wait for the deviceready event before using any of Cordova's device APIs.
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
@@ -34,6 +36,7 @@ function onDeviceReady() {
     // Cordova is now initialized. Have fun!
 
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
+
 }
 
 controller = new MegaMaxApp();
@@ -52,8 +55,11 @@ function MegaMaxApp() {
     // Retrieve client data ready for processing
     getClientData();
 
+    console.log(showDate(today));
+
 
     // Set up a slidedown panel for order displays
+    $("#view").hide();
     $(document).ready(function () {
         $("#view").click(function () {
             $("#panel").slideToggle("slow");
@@ -99,8 +105,8 @@ function MegaMaxApp() {
                 order_id = obj.data[0].id;
                 c_name = clients.data[client_id - 1].name;
                 c_add = clients.data[client_id - 1].address;
-                console.log(c_name + "New order created: ", obj);
-                $("#startOrder").hide()
+                $("#startOrder").hide();
+                $("#view").show();
 
             }
         }
@@ -173,8 +179,8 @@ function MegaMaxApp() {
         var pic = (widgets.data[widget_id].url);
         var desc = (widgets.data[widget_id].description);
         price = (widgets.data[widget_id].pence_price);
-        document.getElementById("image").src = pic;
-        document.getElementById("details").innerHTML = "<br>" + desc + "<br><hr>Price: " + price + "p";
+        $("#image").attr("src", pic);
+        $("#details").html("<br>" + desc + "<br><hr>Price: " + price + "p");
     }
 
     // Cycle to the next widget
@@ -206,6 +212,8 @@ function MegaMaxApp() {
                 vatCost = parseFloat((costInPounds * 0.2).toFixed(2));
                 totalCost = costInPounds + vatCost;
                 getOrderItems(order_id);
+                $("#price").val("");
+                $("#quantity").val("");
             }
         }
         var agreedPrice = getInputValue("price", "");
@@ -235,16 +243,35 @@ function MegaMaxApp() {
         text += "<table border='1'>";
         text += "<tr><th>Widget No.</th><th>Quantity</th><th>Price Each</th><th>Cost</th></tr>"
         for (var x in obj) {
-            text += "<tr><td>" + obj[x].widget_id + "</td><td>" + obj[x].number + "</td><td>" + obj[x].pence_price + "</td><td>" + (obj[x].number * obj[x].pence_price)/100; +"</td></tr>";
+            text += "<tr><td>" + obj[x].widget_id + "</td><td>" + obj[x].number + "</td><td>" + obj[x].pence_price + "</td><td>" + (obj[x].number * obj[x].pence_price) / 100; +"</td></tr>";
         }
         text += "</table>";
-        text += "<p>Subtotal: £" + costInPounds +"</p><p>VAT: £" + vatCost +"</p><p>Total: £" + totalCost +"</p>";
-        text += "<p>Latitude: " + latitude + "  Longitude: " + longitude +"</p>";
-        text += "<button type='button'>Complete Order</button>";
+        text += "<p>Subtotal: £" + costInPounds + "</p><p>VAT: £" + vatCost + "</p><p>Total: £" + totalCost + "</p>";
+        text += "<p>Latitude: " + latitude + "  Longitude: " + longitude + "</p>";
+        text += "<button id='complete' type='button' onclick='controller.completeOrder()'>Complete Order</button>";
 
-        document.getElementById("panel").innerHTML = text;
+        $("#panel").html(text);
     }
 
+    function completeOrder() {
+        alert("Thank you for shopping with MegaMax. Your order has been received.");
+        $("#panel").html("");
+        $("#oucu").val("");
+        $("#client_id").val("");
+        $("#startOrder").show();
+        $("#view").hide();
+        $("#panel").hide();
+        widget_id = 0;
+        showWidget();
+    }
+
+    function showDate(today){
+        var year = today.getFullYear();
+        var month = today.getMonth();
+        var date = today.getDate();
+        var fullDate = year + "-" + month + "-" + date;
+        return fullDate;
+    }
 
 
 
@@ -283,9 +310,7 @@ function MegaMaxApp() {
         addToOrder(oucu, orderNum, widget, quantity, price_pence);
     }
 
-    this.getOrderItems = function () {
-        var id = "127714";
-        getOrderItems(id);
+    this.completeOrder = function () {
+        completeOrder();
     }
-
 }
