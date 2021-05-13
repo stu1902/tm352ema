@@ -1,5 +1,7 @@
 /***********
  * OU TM352 Block 3, TMA03: helpers.js
+ * 
+ * Available for reuse with OU TM352 EMA
  *
  * To function correctly this file must be placed in a Cordova project and the appopriate plugins installed.
  *

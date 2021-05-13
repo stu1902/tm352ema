@@ -27,6 +27,7 @@ var vatCost = 0;
 var costInPounds = 0;
 //Set today's date as a constant.
 const today = new Date();
+var currentOrders = [];
 
 // Wait for the deviceready event before using any of Cordova's device APIs.
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
@@ -34,9 +35,7 @@ document.addEventListener('deviceready', onDeviceReady, false);
 
 function onDeviceReady() {
     // Cordova is now initialized. Have fun!
-
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
-
 }
 
 controller = new MegaMaxApp();
@@ -55,8 +54,6 @@ function MegaMaxApp() {
     // Retrieve client data ready for processing
     getClientData();
 
-    console.log(showDate(today));
-
 
     // Set up a slidedown panel for order displays
     $("#view").hide();
@@ -71,8 +68,10 @@ function MegaMaxApp() {
         // API key for HERE Maps
         apikey: "h7p3f-XtP7I5eFjzxjGAD0XepAboo9QGCTb-uXzLhc8"
     });
+
     // Obtain the default map types from the platform object:
     var defaultLayers = platform.createDefaultLayers();
+
     // Instantiate (and display) a map object:
     var map = new H.Map(
         document.getElementById("mapContainer"),
@@ -96,7 +95,7 @@ function MegaMaxApp() {
     // Instantiate the default behavior, providing the mapEvents object:
     new H.mapevents.Behavior(mapEvents);
 
-    //Function sets up a new order
+    //Set up a new order
     function setNewOrder(oucu, client_id) {
         function setSuccess(data) {
             var obj = JSON.parse(data);
@@ -123,6 +122,7 @@ function MegaMaxApp() {
             map.setCenter(point);
             var marker = new H.map.Marker(point);
             map.addObject(marker);
+            todaysOrders();
         }
         totalCost = 0;
         costInPounds = 0;
@@ -139,9 +139,6 @@ function MegaMaxApp() {
             currentDate = Date.now();
         } while (currentDate - date < milliseconds);
     }
-
-
-
 
     //Function retrieves client details
     function getClientData() {
@@ -234,7 +231,9 @@ function MegaMaxApp() {
         $.ajax(itemsUrl, { type: "GET", data: {}, success: itemsSuccess });
     }
 
-
+    /* FR1.4 Display the sum of ordered items and adding 
+     * VAT to the agreed price of each of the order items at 20%.
+     */
     function itemTable(items) {
         var obj = items.data;
         var text = "";
@@ -253,6 +252,7 @@ function MegaMaxApp() {
         $("#panel").html(text);
     }
 
+    // Complete an order and reset the app ready for the next order.
     function completeOrder() {
         alert("Thank you for shopping with MegaMax. Your order has been received.");
         $("#panel").html("");
@@ -265,12 +265,43 @@ function MegaMaxApp() {
         showWidget();
     }
 
-    function showDate(today){
-        var year = today.getFullYear();
-        var month = today.getMonth();
-        var date = today.getDate();
-        var fullDate = year + "-" + month + "-" + date;
+    //Create a date string in the same format as JSON data.
+    function showDate(today) {
+        var fullDate = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
         return fullDate;
+    }
+
+    /* FR2.2 When clicking on Place NEW Order to start an empty order, 
+     * displaying the orders along the day’s journey with markers,
+     * where the location of client’s addresses are used to place the markers. 
+     */
+    function todaysOrders() {
+        var todayUrl = BASE_URL + "orders?OUCU=st5527&password=" + PASSWORD;
+        function todaySuccess(data) {
+            currentOrders = [];
+            var obj = JSON.parse(data);
+            console.log(obj);
+            if (obj.status === "success") {
+                for (var x = 0; x < obj.data.length; x++) {
+                    var string = obj.data[x].date;
+                    var sub = string.substr(0, 10);
+                    console.log(sub);
+                    if (sub == showDate(today)) {
+                        var point = {
+                            lng: obj.data[x].longitude,
+                            lat: obj.data[x].latitude
+                        }
+                        currentOrders.push(point);
+                    }
+
+                }
+                for (var x = 0; x < currentOrders.length; x++) {
+                    var marker = new H.map.Marker(currentOrders[x]);
+                    map.addObject(marker);
+                }
+            }
+        }
+        $.ajax(todayUrl, { type: "GET", data: {}, success: todaySuccess });
     }
 
 
@@ -292,15 +323,17 @@ function MegaMaxApp() {
         console.log(oucu);
     }
 
-
+    // Cycle to next widget
     this.n_widget = function () {
         nextWidget();
     }
 
+    // Cycle to previous widget
     this.p_widget = function () {
         previousWidget();
     }
 
+    // Call to add item to current order.
     this.addToOrder = function () {
         oucu = getInputValue("oucu", "");
         var orderNum = order_id;
@@ -310,6 +343,7 @@ function MegaMaxApp() {
         addToOrder(oucu, orderNum, widget, quantity, price_pence);
     }
 
+    // Call to complete order.
     this.completeOrder = function () {
         completeOrder();
     }
