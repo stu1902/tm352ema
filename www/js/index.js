@@ -18,6 +18,7 @@
  */
 "use strict";
 
+// Initialise global variables.
 var controller, order, widgets, clients, order_id, price;
 var c_name, c_add, latitude, longitude, coords, oucu;
 var widget_id = 0;
@@ -25,9 +26,9 @@ var subCost = 0;
 var totalCost = 0;
 var vatCost = 0;
 var costInPounds = 0;
-//Set today's date as a constant.
 const today = new Date();
 var currentOrders = [];
+var domIcon = new H.map.DomIcon("<div>&#x274C;</div>");
 
 // Wait for the deviceready event before using any of Cordova's device APIs.
 // See https://cordova.apache.org/docs/en/latest/cordova/events/events.html#deviceready
@@ -38,6 +39,7 @@ function onDeviceReady() {
     console.log('Running cordova-' + cordova.platformId + '@' + cordova.version);
 }
 
+// Create a new instance of the app.
 controller = new MegaMaxApp();
 
 
@@ -61,6 +63,11 @@ function MegaMaxApp() {
         $("#view").click(function () {
             $("#panel").slideToggle("slow");
         });
+    });
+
+    // Display an error alert on any AJAX error.
+    $(document).ajaxError(function () {
+        alert("An error occurred, please try again.");
     });
 
     // Initialize the map platform object:
@@ -106,7 +113,10 @@ function MegaMaxApp() {
                 c_add = clients.data[client_id - 1].address;
                 $("#startOrder").hide();
                 $("#view").show();
-
+            } else if (obj.message) {
+                alert(obj.message);
+            } else {
+                alert(obj.status + " " + obj.data[0].reason);
             }
         }
 
@@ -120,7 +130,7 @@ function MegaMaxApp() {
                 lat: latitude
             };
             map.setCenter(point);
-            var marker = new H.map.Marker(point);
+            var marker = new H.map.DomMarker(point, { icon: domIcon });
             map.addObject(marker);
             todaysOrders();
         }
@@ -146,6 +156,10 @@ function MegaMaxApp() {
             clients = JSON.parse(data);
             if (clients.status === "success") {
                 console.log("Client Data received: ", clients);
+            } else if (obj.message) {
+                alert(obj.message);
+            } else {
+                alert(obj.status + " " + obj.data[0].reason);
             }
         }
         var url = BASE_URL + "clients?OUCU=st5527&password=" + PASSWORD;
@@ -163,6 +177,10 @@ function MegaMaxApp() {
             widgets = JSON.parse(data);
             if (widgets.status === "success") {
                 console.log("Widget Data received: ", widgets);
+            } else if (obj.message) {
+                alert(obj.message);
+            } else {
+                alert(obj.status + " " + obj.data[0].reason);
             }
             showWidget();
         }
@@ -211,6 +229,10 @@ function MegaMaxApp() {
                 getOrderItems(order_id);
                 $("#price").val("");
                 $("#quantity").val("");
+            } else if (obj.message) {
+                alert(obj.message);
+            } else {
+                alert(obj.status + " " + obj.data[0].reason);
             }
         }
         var agreedPrice = getInputValue("price", "");
@@ -274,13 +296,14 @@ function MegaMaxApp() {
     /* FR2.2 When clicking on Place NEW Order to start an empty order, 
      * displaying the orders along the day’s journey with markers,
      * where the location of client’s addresses are used to place the markers. 
+     * A red cross icon will mark the current order, any previous orders from the
+     * same day will be clustered with each icon showing the number of orders.
      */
     function todaysOrders() {
         var todayUrl = BASE_URL + "orders?OUCU=st5527&password=" + PASSWORD;
         function todaySuccess(data) {
             currentOrders = [];
             var obj = JSON.parse(data);
-            console.log(obj);
             if (obj.status === "success") {
                 for (var x = 0; x < obj.data.length; x++) {
                     var string = obj.data[x].date;
@@ -293,12 +316,20 @@ function MegaMaxApp() {
                         }
                         currentOrders.push(point);
                     }
-
                 }
+                var dataPoints = [];
                 for (var x = 0; x < currentOrders.length; x++) {
-                    var marker = new H.map.Marker(currentOrders[x]);
-                    map.addObject(marker);
+                    dataPoints.push(new H.clustering.DataPoint(currentOrders[x].lat, currentOrders[x].lng));
                 }
+                var clusteredDataProvider = new H.clustering.Provider(dataPoints);
+                // Create a layer that includes the data provider and its data points: 
+                var layer = new H.map.layer.ObjectLayer(clusteredDataProvider);
+                // Add the layer to the map:
+                map.addLayer(layer);
+            } else if (obj.message) {
+                alert(obj.message);
+            } else {
+                alert(obj.status + " " + obj.data[0].reason);
             }
         }
         $.ajax(todayUrl, { type: "GET", data: {}, success: todaySuccess });
