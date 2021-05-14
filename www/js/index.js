@@ -225,7 +225,7 @@ function MegaMaxApp() {
                 subCost += cost;
                 costInPounds = parseFloat((subCost / 100).toFixed(2));
                 vatCost = parseFloat((costInPounds * 0.2).toFixed(2));
-                totalCost = costInPounds + vatCost;
+                totalCost = (costInPounds + vatCost).toFixed(2);
                 getOrderItems(order_id);
                 $("#price").val("");
                 $("#quantity").val("");
