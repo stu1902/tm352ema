@@ -20,7 +20,7 @@
 
 // Initialise global variables.
 var controller, order, widgets, clients, order_id, price;
-var c_name, c_add, latitude, longitude, coords, oucu;
+var c_name, c_add, latitude, longitude, coords, oucu, marker;
 var widget_id = 0;
 var subCost = 0;
 var totalCost = 0;
@@ -85,7 +85,7 @@ function MegaMaxApp() {
         defaultLayers.vector.normal.map,
         {
             zoom: 12,
-            center: { lat: 52.407886, lng: -4.057142 }
+            center: { lat: 0, lng: 0 }
         }
     );
 
@@ -101,6 +101,27 @@ function MegaMaxApp() {
     var mapEvents = new H.mapevents.MapEvents(map);
     // Instantiate the default behavior, providing the mapEvents object:
     new H.mapevents.Behavior(mapEvents);
+
+
+    function updateMap() {
+        function onSuccess(position) {
+            console.log("Obtained position", position);
+            var point = {
+                lng: position.coords.longitude,
+                lat: position.coords.latitude,
+            };
+                map.setCenter(point);
+        }
+        
+        function onError (error) {
+            console.error("Error calling getCurrentPosition", error);
+        }
+        navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+            enableHighAccuracy: true,
+        });
+    }
+    // Update map on startup
+    updateMap();
 
     //Set up a new order
     function setNewOrder(oucu, client_id) {
@@ -130,10 +151,14 @@ function MegaMaxApp() {
                 lat: latitude
             };
             map.setCenter(point);
-            var marker = new H.map.DomMarker(point, { icon: domIcon });
+            marker = new H.map.DomMarker(point, { icon: domIcon });
             map.addObject(marker);
             todaysOrders();
         }
+        if(marker){
+            map.removeObject(marker);
+        }
+        subCost = 0;
         totalCost = 0;
         costInPounds = 0;
         var address = clients.data[client_id - 1].address;

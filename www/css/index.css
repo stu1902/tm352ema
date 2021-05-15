@@ -59,8 +59,15 @@ body {
 .flexContainer {
     display:flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: space-between; 
 }
+
+#ident, #navigate, #agreedPrice, #order {
+    width: 100%;
+    font-weight: bold;
+    margin:auto;
+}
+
 
 h1 {
     font-size:20px;
